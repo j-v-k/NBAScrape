@@ -40,7 +40,7 @@ def Get_Player_Info(tup2):
         year = str(i) + "-"+ "{0:0=2d}".format(last2)
         
         
-        url = 'http://stats.nba.com/stats/playergamelog?LeagueID=00&PlayerID=' + str(tup2[0]) + '&Season=' + year + '&SeasonType=Playoffs'
+        url = 'http://stats.nba.com/stats/playergamelog?LeagueID=00&PlayerID=' + str(tup2[0]) + '&Season=' + year + '&SeasonType=Regular+Season'
     
     
         headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:39.0) Gecko/20100101 Firefox/39.0'}
@@ -68,7 +68,7 @@ def write_csv(info,csvFile):
             g.writerow(row)
                 
 def Iter(playerTupleList):
-    csvFile =  open('nba.csv', 'w')    
+    csvFile =  open('C:\\Users\\James\\Documents\\GitHub\NBAScrape\\nba.csv', 'w')    
     for i in playerTupleList:
         print i[1]
         info = Get_Player_Info(i,)

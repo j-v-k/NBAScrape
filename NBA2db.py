@@ -7,115 +7,53 @@ Created on Mon Jun 20 15:49:20 2016
 
 import requests
 
-
-'''url = 'http://stats.nba.com/stats/boxscoretraditionalv2'+\
-'?EndPeriod=10&EndRange=28800&GameID=0021500893&RangeType=0'+\
-'&Season=2015-16&SeasonType=Regular+Season&StartPeriod=1'+\
-'&StartRange=0'
-'''
-#url = 'http://stats.nba.com/stats/leaguedashteamstats?Conference=&DateFrom=&DateTo=&Division=&GameScope=&GameSegment=&LastNGames=0&LeagueID=00&Location=&MeasureType=Base&Month=0&OpponentTeamID=0&Outcome=&PORound=0&PaceAdjust=N&PerMode=PerGame&Period=0&PlayerExperience=&PlayerPosition=&PlusMinus=N&Rank=N&Season=2015-16&SeasonSegment=&SeasonType=Regular+Season&ShotClockRange=&StarterBench=&TeamID=0&VsConference=&VsDivision='
-
-
-
-def GetPlayers_List():
-    url = 'http://stats.nba.com/stats/commonallplayers?IsOnlyCurrentSeason=0&LeagueID=00&Season=2015-16'
-    headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:39.0) Gecko/20100101 Firefox/39.0'}
-    response = requests.get(url, headers=headers)
-    players = response.json()['resultSets'][0]['rowSet']
-    playerTupleList = []
-    for i in players:
-        tup = (i[0], i[1],i[4],i[5])
-        playerTupleList += [tup]
-    return playerTupleList
-
-playerTupleList = GetPlayers_List()
-
-
-
-def Get_Player_Info(tup2):
-    Log = []
-    for i in range(int(tup2[2]),int(tup2[3])+1):
-        
-        last2 = int(str(i+1)[2:])
-        year = str(i) + "-"+ "{0:0=2d}".format(last2)
-        
-        
-        url = 'http://stats.nba.com/stats/playergamelog?LeagueID=00&PlayerID=' + str(tup2[0]) + '&Season=' + year + '&SeasonType=Playoffs'
-    
-    
-        headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:39.0) Gecko/20100101 Firefox/39.0'}
-        try:
-            
-            response = requests.get(url, headers=headers)
-            Season = response.json()['resultSets'][0]['rowSet']
-            Log += [Season]
-            
-            
-        except:
-            
-            print 'error'
-            pass
-    return Log
-
-
 import MySQLdb
 db = MySQLdb.connect(host="localhost",    # your host, usually localhost
                      user="root",         # your username
-                     passwd="Boqw7778",  # your password
-                     db="Players")
+                     passwd="tintin",  # your password
+                     db="nba")
 
-cur = db.cursor()
 
-def AddPlayer(content):
+def AddPlayer():
     '''Add a new post to the database.
 
     Args:
       content: The text content of the new post.
     '''
     cursor = db.cursor()
-    cursor.execute("insert into GameLog values ('%s')" % (content,))
-    db.commit()
+    cursor.execute("select Matchup from gamelogs" )
+    data = cursor.fetchall()
+    return data
+y=AddPlayer()
+
+def newList(y):
+    newList = []
+    for i in y:
+        LargeTup = i[0]
+        playerTeam = LargeTup[:3]
+        Opponent = LargeTup[-3:]
+        if "vs" in LargeTup[4:8]:
+            homeAway = 1
+        else:
+            homeAway = 0
+        newList += [[playerTeam,Opponent,homeAway]]
+    return newList
 
 
 
-
-
-def Iter(playerTupleList):
-    #csvFile =  open('nba.csv', 'w')
-    playerTupleList = [(76001, 'Abdelnaby, Alaa', '1990', '1994'),(76002, 'Abdul-Aziz, Zaid', '1968', '1977')]   
-    for i in playerTupleList:
-        print i[1]
-        print i
-        
-        info = Get_Player_Info(i)
-        
-        #write_csv(info)
-        AddPlayer(info)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def write_csv(info,csvFile):
+def write_csv(newList,csvFile):
     import csv
     
     g = csv.writer(csvFile, delimiter=',',lineterminator = '\n')
-    for record in info:
-        for row in record:
-            g.writerow(row)
-                
+    for record in newList:
+        g.writerow(record)
+
+newList = newList(y)               
+def Iter(newList):
+    csvFile =  open('C:\\Users\\James\\Documents\\GitHub\\NBAScrape\\Matchups.csv', 'w')    
+    write_csv(newList,csvFile)
 
 
-Iter(playerTupleList)
+Iter(newList)
+
+
