@@ -54,6 +54,8 @@ def Get_Player_Info(tup2):
         except:
             
             print 'error'
+            print i
+            return
             pass
     return Log
 
@@ -68,7 +70,7 @@ def write_csv(info,csvFile):
             g.writerow(row)
                 
 def Iter(playerTupleList):
-    csvFile =  open('C:\\Users\\James\\Documents\\GitHub\NBAScrape\\nba.csv', 'w')    
+    csvFile =  open('C:\\Users\\James\\Documents\\GitHub\NBAScrapeLargeFiles\\nba.csv', 'w')    
     for i in playerTupleList:
         print i[1]
         info = Get_Player_Info(i,)

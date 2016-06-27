@@ -36,4 +36,26 @@ CREATE TABLE  `Gamelogs`(
         IDKey int not null AUTO_INCREMENT,
         primary key (IDKey),
         FOREIGN KEY (Player_ID) REFERENCES Players(Player_ID)
-        )
+        );
+        
+        
+        
+load data local infile 'C:\\Users\\James\\Documents\\GitHub\\NBAScrapeLargeFiles\\PostGameLogNullDateFixed.csv' 
+into table seasonstats fields terminated by ','
+enclosed by '"'
+lines terminated by '\n';
+
+
+load data local infile 'C:\\Users\\James\\Documents\\GitHub\\NBAScrapeLargeFiles\\NullFixed.csv' 
+into table seasonstats fields terminated by ','
+enclosed by '"'
+lines terminated by '\n';
+        
+UPDATE gamelogs
+SET PostReg='Reg'
+WHERE PostReg is null;
+
+UPDATE gamelogs
+SET PostReg='Post'
+WHERE PostReg is not null;
+

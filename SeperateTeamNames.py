@@ -1,25 +1,54 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Jun 23 18:49:16 2016
-
-@author: James
-"""
-import win32com.client
 
 
-def ado():
-    '''
-    connect with com dispatch objs
-    '''
-    db = 'PlayersInstance'
-    conn = win32com.client.Dispatch(r'ADODB.Connection')
-    DSN = ('PROVIDER = Microsoft.Jet.OLEDB.4.0;DATA SOURCE = ' + db +  ';')
-    conn.Open(DSN)
 
-    rs = win32com.client.Dispatch(r'ADODB.Recordset')
-    strsql = "select * from nba"
-    rs.Open(strsql, conn, 1, 3)
-    t = rs.GetRows()
-    conn.Close()
-    return t
-x = ado()
+
+
+
+
+
+import csv
+import datetime
+
+g = csv.reader
+
+
+def seperate_teams(string):
+    playerTeam = string[:3]
+    oppTeam = string[-3:]
+    if "vs." in string:
+        homeAway =1
+    else:
+        homeAway = 0
+    return [playerTeam,oppTeam,homeAway]     
+
+
+import csv
+f = open('C:\\Users\\James\\Documents\\GitHub\\NBAScrapeLargeFiles\\postSeasonNullFixed.csv', 'rb')
+reader = csv.reader(f)
+newList = []
+for row in reader:
+    row += seperate_teams(row[4])
+         
+    newList += [row]
+f.close()
+
+
+
+
+
+
+
+
+def write_csv(newList,csvFile):
+    
+    
+    g = csv.writer(csvFile, delimiter=',',lineterminator = '\n')
+    for record in newList:
+        g.writerow(record)
+
+             
+def Iter(newList):
+    csvFile =  open('C:\\Users\\James\\Documents\\GitHub\\NBAScrapeLargeFiles\\postSeasonWithMatch.csv', 'w')    
+    write_csv(newList,csvFile)
+
+Iter(newList)
